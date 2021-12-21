@@ -34,9 +34,10 @@ struct ContentView: View {
                     
                     return
                 }
-                
                 var selectedTextRange = CFRange()
                 AXValueGetValue(axSelectedTextRange as! AXValue, .cfRange, &selectedTextRange)
+                print("caret location and selected length: ", selectedTextRange)
+                
                 var currentLine: AnyObject?
                 axError = AXUIElementCopyParameterizedAttributeValue(axFocusedElement as! AXUIElement, kAXLineForIndexParameterizedAttribute as CFString, selectedTextRange.location as CFTypeRef, &currentLine)
                 guard axError == .success else {
@@ -44,6 +45,7 @@ struct ContentView: View {
                     
                     return
                 }
+                print("line number: ", currentLine ?? -69)
                 
                 var lineRangeValue: AnyObject?
                 axError = AXUIElementCopyParameterizedAttributeValue(axFocusedElement as! AXUIElement, kAXRangeForLineParameterizedAttribute as CFString, currentLine as CFTypeRef, &lineRangeValue)
@@ -52,11 +54,9 @@ struct ContentView: View {
                     
                     return
                 }
-                
                 var lineRange = CFRange()
                 AXValueGetValue(lineRangeValue as! AXValue, .cfRange, &lineRange)
-                
-                print(lineRange)
+                print("line start and length: ", lineRange)
             }
             .padding()
             
