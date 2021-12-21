@@ -14,19 +14,22 @@ struct ContentView: View {
                 let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: true]
                 _ = AXIsProcessTrustedWithOptions(options)
                 
-                sleep(4)
+                sleep(3)
                 
                 let axSystemWideElement = AXUIElementCreateSystemWide()
+                var axError: AXError!
                 
                 var axFocusedElement: AnyObject?
-                guard AXUIElementCopyAttributeValue(axSystemWideElement, kAXFocusedUIElementAttribute as CFString, &axFocusedElement) == .success else {
+                axError = AXUIElementCopyAttributeValue(axSystemWideElement, kAXFocusedUIElementAttribute as CFString, &axFocusedElement)
+                guard axError == .success else {
                     print("can't get system wide element")
                     
                     return                    
                 }
                 
                 var axSelectedTextRange: AnyObject?
-                guard AXUIElementCopyAttributeValue(axFocusedElement as! AXUIElement, kAXSelectedTextRangeAttribute as CFString, &axSelectedTextRange) == .success else {
+                axError = AXUIElementCopyAttributeValue(axFocusedElement as! AXUIElement, kAXSelectedTextRangeAttribute as CFString, &axSelectedTextRange)
+                guard axError == .success else {
                     print("can't get text range")
                     
                     return
@@ -34,16 +37,17 @@ struct ContentView: View {
                 
                 var selectedTextRange = CFRange()
                 AXValueGetValue(axSelectedTextRange as! AXValue, .cfRange, &selectedTextRange)
-                
                 var currentLine: AnyObject?
-                guard AXUIElementCopyParameterizedAttributeValue(axFocusedElement as! AXUIElement, kAXLineForIndexParameterizedAttribute as CFString, selectedTextRange.location as CFTypeRef, &currentLine) == .success else {
+                axError = AXUIElementCopyParameterizedAttributeValue(axFocusedElement as! AXUIElement, kAXLineForIndexParameterizedAttribute as CFString, selectedTextRange.location as CFTypeRef, &currentLine)
+                guard axError == .success else {
                     print("can't get current line")
                     
                     return
                 }
                 
                 var lineRangeValue: AnyObject?
-                guard AXUIElementCopyParameterizedAttributeValue(axFocusedElement as! AXUIElement, kAXRangeForLineParameterizedAttribute as CFString, currentLine as CFTypeRef, &lineRangeValue) == .success else {
+                axError = AXUIElementCopyParameterizedAttributeValue(axFocusedElement as! AXUIElement, kAXRangeForLineParameterizedAttribute as CFString, currentLine as CFTypeRef, &lineRangeValue)
+                guard axError == .success else {
                     print("can't get line range")
                     
                     return
@@ -60,7 +64,7 @@ struct ContentView: View {
                 let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: true]
                 _ = AXIsProcessTrustedWithOptions(options)
                 
-                sleep(2)
+                sleep(3)
                 
                 let axSystemWideElement = AXUIElementCreateSystemWide()
                 var axError: AXError!
