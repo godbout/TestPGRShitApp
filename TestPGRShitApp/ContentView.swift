@@ -54,8 +54,47 @@ struct ContentView: View {
                 
                 print(lineRange)
             }
+            .padding()
+            
+            Button("set AX info") {
+                let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: true]
+                _ = AXIsProcessTrustedWithOptions(options)
+                
+                sleep(2)
+                
+                let axSystemWideElement = AXUIElementCreateSystemWide()
+                var axError: AXError!
+                
+                var axFocusedElement: AnyObject?
+                axError =  AXUIElementCopyAttributeValue(axSystemWideElement, kAXFocusedUIElementAttribute as CFString, &axFocusedElement)
+                guard axError == .success else {
+                    print("can't get system wide element")
+                    
+                    return                    
+                }
+                
+                var selectedTextRange = CFRange()
+                selectedTextRange.location = 6
+                selectedTextRange.length = 9
+                let newValue = AXValueCreate(.cfRange, &selectedTextRange)
+                axError = AXUIElementSetAttributeValue(axFocusedElement as! AXUIElement, kAXSelectedTextRangeAttribute as CFString, newValue!)
+                guard axError == .success else {
+                    print("can't set new location and selected text")
+                    
+                    return
+                }
+                
+                let selectedText = "sixty-nine LMAO"
+                axError = AXUIElementSetAttributeValue(axFocusedElement as! AXUIElement, kAXSelectedTextAttribute as CFString, selectedText as CFTypeRef)
+                guard axError == .success else {
+                    print("can't update selected text")
+                    
+                    return
+                }
+            }
+            .padding()
         }
-        .frame(width: 300, height: 300, alignment: .center)
+        .frame(width: 200, height: 200, alignment: .center)
     }
 }
 
